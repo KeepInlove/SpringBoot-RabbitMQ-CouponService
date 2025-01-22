@@ -1,0 +1,111 @@
+# 开发环境配置
+server:
+  # 服务器的HTTP端口，默认为8080
+  port: 8080
+  servlet:
+    # 应用的访问路径
+    context-path: /
+  tomcat:
+    # tomcat的URI编码
+    uri-encoding: UTF-8
+    # 连接数满后的排队数，默认为100
+    accept-count: 1000
+    threads:
+      # tomcat最大线程数，默认为200
+      max: 800
+      # Tomcat启动初始化的线程数，默认值10
+      min-spare: 100
+
+# Spring配置
+spring:
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/seckill?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+    username: root
+    password: root
+    druid:
+      name: alibabaDruidPool
+      initial-size: 5
+      minIdle: 5
+      maxActive: 20
+      maxWait: 60000
+      #配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      timeBetweenEvictionRunsMillis: 60000
+      #连接保持空闲而不被驱逐的最小时间，单位是毫秒
+      minEvictableIdleTimeMillis: 300000
+      maxEvictableIdleTimeMillis: 900000
+      default-auto-commit: true
+      #用来检测连接是否有效的sql
+      validationQuery: SELECT 1
+      #申请连接的时候检测，如果空闲时间大于timeBetweenEvictionRunsMillis，执行validationQuery检测连接是否有效
+      testWhileIdle: true
+      #申请连接时执行validationQuery检测连接是否有效，做了这个配置会降低性能
+      testOnBorrow: false
+      #开启web监控可视化
+      stat-view-servlet:
+        enabled: true
+        allow: ""
+        url-pattern: /druid/*
+        login-username: admin
+        login-password: admin
+        #开启监控
+      filter:
+        stat:
+          log-slow-sql: true
+          slow-sql-millis: 2000
+          merge-sql: true
+          #防SQL注入
+        wall:
+          config:
+            multi-statement-allow: true
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: rabbitmq
+    password: rabbitmq
+    virtual-host: mirror
+    listener:
+      simple:
+        acknowledge-mode: manual
+        retry:
+          enabled: true
+          max-attempts: 5
+          initial-interval: 2000
+          max-interval: 20000
+    template:
+      exchange: coupon-exchange
+      routing-key: coupon.routing.key
+    dlx:
+      exchange: dlx-exchange
+      routing-key: dlx.routing.key
+
+#    dlx:
+#    exchange: dlx-exchange
+#      routing-key: dlx.routing.key
+  redis:
+    redisson:
+      config: classpath:redisson.yaml                    # 命令执行超时时间（毫秒）
+  # 文件上传
+  servlet:
+    multipart:
+      # 单个文件大小
+      max-file-size: 10MB
+      # 设置总上传的文件大小
+      max-request-size: 20MB
+  # mybatis-plus
+mybatis-plus:
+  mapper-locations: classpath*:mapper/**/*Mapper.xml
+  type-aliases-package: com.example.springbootmybatisplus.**.domain
+  global-config:
+    db-config:
+      id-type: auto
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+# 日志配置
+logging:
+  config: classpath:logback-dev.xml
+  level:
+    com.example.springbootmybatisplus: debug
+    org.springframework: warn

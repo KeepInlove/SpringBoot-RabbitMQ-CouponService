@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8" />
+    <title>领取优惠券</title>
+    <style>
+        body {
+            font-family: "微软雅黑", sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 0 20px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-item {
+            margin-bottom: 15px;
+        }
+        .form-item label {
+            display: inline-block;
+            width: 120px;
+            text-align: right;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        .form-item input {
+            width: 60%;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            display: block;
+            margin: 0 auto;
+            background-color: #67c23a;
+            color: #fff;
+            padding: 8px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #95d475;
+        }
+        #result {
+            margin-top: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<h1>领取优惠券</h1>
+<div class="form-item">
+    <label for="userId">用户ID：</label>
+    <input type="number" id="userId" placeholder="如：1001" />
+</div>
+<div class="form-item">
+    <label for="couponId">优惠券ID：</label>
+    <input type="number" id="couponId" placeholder="如：1" />
+</div>
+<div class="form-item">
+    <label for="num">领取数量：</label>
+    <input type="number" id="num" min="1" value="1" />
+</div>
+<button onclick="getCoupon()">领取优惠券</button>
+
+<div id="result"></div>
+
+<script>
+    async function getCoupon() {
+        const userId = parseInt(document.getElementById('userId').value || 0);
+        const couponId = parseInt(document.getElementById('couponId').value || 0);
+        const num = parseInt(document.getElementById('num').value || 1);
+
+        const reqData = { userId, couponId, num };
+
+        let resultElement = document.getElementById('result');
+        resultElement.innerText = '正在领取优惠券...';
+
+        try {
+            const response = await fetch('http://localhost:8080/api/coupon/asyncCoupon', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(reqData)
+            });
+            if (!response.ok) {
+                throw new Error(`请求失败，状态码：${response.status}`);
+            }
+            const data = await response.text();
+            // 后端这里返回的是字符串 "优惠券领取成功" 或 "优惠券领取失败"
+            resultElement.innerText = data;
+        } catch (error) {
+            resultElement.innerText = '领取优惠券时出现错误：' + error;
+        }
+    }
+</script>
+</body>
+</html>

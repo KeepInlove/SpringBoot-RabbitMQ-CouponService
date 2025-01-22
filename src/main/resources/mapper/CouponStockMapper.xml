@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.springbootmybatisplus.mapper.CouponStockMapper">
+    <!-- 已存在的库存减少操作 -->
+    <update id="reduceStockWithOptimisticLock">
+        UPDATE coupon_stock
+        SET remaining_stock = remaining_stock - #{num},
+            version = version + 1
+        WHERE coupon_id = #{couponId}
+          AND version = #{version}
+    </update>
+
+    <!-- 新增的库存增加操作 -->
+    <update id="increaseStockWithOptimisticLock">
+        UPDATE coupon_stock
+        SET remaining_stock = remaining_stock + #{num},
+            version = version + 1
+        WHERE coupon_id = #{couponId}
+          AND version = #{version}
+    </update>
+</mapper>
